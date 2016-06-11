@@ -6,12 +6,12 @@
 
     <parent>
         <groupId>edu.dbortnichuk</groupId>
-        <artifactId>scratchpad</artifactId>
+        <artifactId>akka-in-action</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>spark</artifactId>
+    <artifactId>chapter-up-and-running</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -75,56 +75,45 @@
                     <artifactId>scala-library</artifactId>
                     <version>${scala.version}</version>
                 </dependency>
+                <dependency>
+                    <groupId>com.typesafe.akka</groupId>
+                    <artifactId>akka-actor_2.11</artifactId>
+                    <version>2.4.4</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.typesafe.akka</groupId>
+                    <artifactId>akka-cluster_2.11</artifactId>
+                    <version>2.4.4</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.typesafe.akka</groupId>
+                    <artifactId>akka-slf4j_2.11</artifactId>
+                    <version>2.4.4</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.typesafe.akka</groupId>
+                    <artifactId>akka-http-core_2.11</artifactId>
+                    <version>2.4.4</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.typesafe.akka</groupId>
+                    <artifactId>akka-http-experimental_2.11</artifactId>
+                    <version>2.4.4</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.typesafe.akka</groupId>
+                    <artifactId>akka-http-spray-json-experimental_2.11</artifactId>
+                    <version>2.4.4</version>
+                </dependency>
+                <dependency>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                    <version>1.1.3</version>
+                </dependency>
 
-                <dependency>
-                    <groupId>org.apache.spark</groupId>
-                    <artifactId>spark-core_${scala.compat.version}</artifactId>
-                    <version>${spark.version}</version>
-                    <!--<scope>provided</scope>-->
-                </dependency>
-                <!--<dependency>-->
-                <!--<groupId>org.apache.hadoop</groupId>-->
-                <!--<artifactId>hadoop-client</artifactId>-->
-                <!--<version>${hadoop.version}</version>-->
-                <!--<scope>provided</scope>-->
-                <!--</dependency>-->
-                <dependency>
-                    <groupId>org.apache.spark</groupId>
-                    <artifactId>spark-streaming_${scala.compat.version}</artifactId>
-                    <version>${spark.version}</version>
-                </dependency>
 
-                <!--<dependency>-->
-                    <!--<groupId>org.apache.spark</groupId>-->
-                    <!--<artifactId>spark-streaming-kafka_${scala.compat.version}</artifactId>-->
-                    <!--<version>${spark.kafka.version}</version>-->
-                <!--</dependency>-->
-                <dependency>
-                    <groupId>org.apache.spark</groupId>
-                    <artifactId>spark-sql_${scala.compat.version}</artifactId>
-                    <version>${spark.version}</version>
-                    <!--<scope>provided</scope>-->
-                </dependency>
-                <!--<dependency>-->
-                    <!--<groupId>org.elasticsearch</groupId>-->
-                    <!--<artifactId>elasticsearch-spark_${scala.compat.version}</artifactId>-->
-                    <!--<version>${elasticsearch.spark.version}</version>-->
-                <!--</dependency>-->
-                <!--<dependency>-->
-                    <!--<groupId>com.google.code.gson</groupId>-->
-                    <!--<artifactId>gson</artifactId>-->
-                    <!--<version>2.5</version>-->
-                <!--</dependency>-->
-                <!--<dependency>-->
-                    <!--<groupId>com.typesafe.akka</groupId>-->
-                    <!--<artifactId>akka-actor_2.10</artifactId>-->
-                    <!--<version>2.3.11</version>-->
-                <!--</dependency>-->
-                <!--<dependency>-->
-                    <!--<groupId>com.typesafe.akka</groupId>-->
-                    <!--<artifactId>akka-remote_2.10</artifactId>-->
-                    <!--<version>2.3.11</version>-->
-                <!--</dependency>-->
+
+
 
             </dependencies>
         </profile>
@@ -179,48 +168,12 @@
                     <version>${scala.test.version}</version>
                     <scope>test</scope>
                 </dependency>
-                <!--<dependency>-->
-                <!--<groupId>org.apache.spark</groupId>-->
-                <!--<artifactId>spark-core_${scala.compat.version}</artifactId>-->
-                <!--<version>${spark.version}</version>-->
-                <!--<scope>test</scope>-->
-                <!--</dependency>-->
-                <!--&lt;!&ndash;<dependency>&ndash;&gt;-->
-                <!--&lt;!&ndash;<groupId>org.apache.hadoop</groupId>&ndash;&gt;-->
-                <!--&lt;!&ndash;<artifactId>hadoop-client</artifactId>&ndash;&gt;-->
-                <!--&lt;!&ndash;<version>${hadoop.version}</version>&ndash;&gt;-->
-                <!--&lt;!&ndash;<scope>provided</scope>&ndash;&gt;-->
-                <!--&lt;!&ndash;</dependency>&ndash;&gt;-->
-                <!--<dependency>-->
-                <!--<groupId>org.apache.spark</groupId>-->
-                <!--<artifactId>spark-streaming_${scala.compat.version}</artifactId>-->
-                <!--<version>${spark.version}</version>-->
-                <!--<scope>test</scope>-->
-                <!--</dependency>-->
-                <!--<dependency>-->
-                <!--<groupId>org.apache.spark</groupId>-->
-                <!--<artifactId>spark-streaming-kafka_${scala.compat.version}</artifactId>-->
-                <!--<version>${spark.kafka.version}</version>-->
-                <!--<scope>test</scope>-->
-                <!--</dependency>-->
-                <!--<dependency>-->
-                <!--<groupId>org.elasticsearch</groupId>-->
-                <!--<artifactId>elasticsearch-spark_${scala.compat.version}</artifactId>-->
-                <!--<version>${elasticsearch.version}</version>-->
-                <!--<scope>test</scope>-->
-                <!--</dependency>-->
-                <!--<dependency>-->
-                    <!--<groupId>com.github.tlrx</groupId>-->
-                    <!--<artifactId>elasticsearch-test</artifactId>-->
-                    <!--<version>${elasticsearch.test.version}</version>-->
-                    <!--<scope>test</scope>-->
-                <!--</dependency>-->
-                <!--<dependency>-->
-                    <!--<groupId>info.batey.kafka</groupId>-->
-                    <!--<artifactId>kafka-unit</artifactId>-->
-                    <!--<version>${spark.kafka.test.version}</version>-->
-                    <!--<scope>test</scope>-->
-                <!--</dependency>-->
+                <dependency>
+                    <groupId>com.typesafe.akka</groupId>
+                    <artifactId>akka-testkit_2.11</artifactId>
+                    <version>2.4.4</version>
+                </dependency>
+
 
 
             </dependencies>
