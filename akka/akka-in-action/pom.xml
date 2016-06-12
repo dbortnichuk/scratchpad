@@ -16,10 +16,25 @@
 
     <modules>
         <module>chapter-up-and-running</module>
+        <module>chapter-testdriven</module>
+        <module>chapter-fault-tolerance</module>
+        <module>chapter-futures</module>
+        <module>chapter-remoting</module>
+        <module>chapter-conf-deploy</module>
+        <module>chapter-structure</module>
+        <module>chapter-routing</module>
+        <module>chapter-channels</module>
+        <module>chapter-state</module>
+        <module>chapter-integration</module>
     </modules>
 
     <properties>
-
+        <scala.version>2.11.7</scala.version>
+        <scala.test.version>2.2.6</scala.test.version>
+        <scala.tools.version>2.15.2</scala.tools.version>
+        <scala.compat.version>2.11</scala.compat.version>
+        <scala.test.plugin.version>1.0</scala.test.plugin.version>
+        <akka.version>2.4.4</akka.version>
     </properties>
 
 </project>
