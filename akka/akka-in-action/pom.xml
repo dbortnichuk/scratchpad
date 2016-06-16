@@ -26,6 +26,11 @@
         <module>chapter-channels</module>
         <module>chapter-state</module>
         <module>chapter-integration</module>
+        <module>chapter-cluster</module>
+        <module>chapter-persistance</module>
+        <module>chapter-perf</module>
+        <!--<module>chapter-stream</module>-->
+        <module>chapter-looking-ahead</module>
     </modules>
 
     <properties>

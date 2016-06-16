@@ -83,6 +83,11 @@
                     <version>${akka.version}</version>
                 </dependency>
                 <dependency>
+                    <groupId>com.typesafe.akka</groupId>
+                    <artifactId>akka-camel_${scala.compat.version}</artifactId>
+                    <version>${akka.version}</version>
+                </dependency>
+                <dependency>
                     <groupId>net.liftweb</groupId>
                     <artifactId>lift-json_2.10</artifactId>
                     <version>${lift-json.version}</version>
@@ -193,7 +198,6 @@
                     <version>${camel.version}</version>
                     <scope>test</scope>
                 </dependency>
-
 
 
             </dependencies>
