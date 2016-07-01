@@ -18,6 +18,7 @@
     </developers>
 
     <modules>
+        <module>java</module>
         <module>spark</module>
         <module>akka</module>
     </modules>
