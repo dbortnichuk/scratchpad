@@ -1,5 +1,7 @@
-1
-2
-3
-4
-1234
+Sometimes we want to produce multiple output elements for each input element. The
+operation to do this is called flatMap(). As with map(), the function we provide to
+flatMap() is called individually for each element in our input RDD. Instead of
+returning a single element, we return an iterator with our return values. Rather than
+producing an RDD of iterators, we get back an RDD that consists of the elements
+from all of the iterators. A simple usage of flatMap() is splitting up an input string
+into words, as shown in Examples 3-29 through 3-31.
