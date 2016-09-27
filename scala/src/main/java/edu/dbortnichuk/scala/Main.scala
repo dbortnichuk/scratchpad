@@ -4,7 +4,8 @@ object Main {
 
   def main(args: Array[String]) {
 
-    println("Main!")
+    var internalState = Vector[String]()
+
 
   }
 
