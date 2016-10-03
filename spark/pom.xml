@@ -22,7 +22,7 @@
         <scala.tools.version>2.15.2</scala.tools.version>
         <scala.compat.version>2.10</scala.compat.version>
         <scala.test.plugin.version>1.0</scala.test.plugin.version>
-        <spark.version>1.6.0</spark.version>
+        <spark.version>2.0.0</spark.version>
         <mysql.version>5.1.6</mysql.version>
         <elasticsearch.version>2.4.0</elasticsearch.version>
         <!--<hadoop.version>2.7.1</hadoop.version>-->

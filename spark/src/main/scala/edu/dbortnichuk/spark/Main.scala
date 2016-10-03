@@ -25,6 +25,7 @@ object Main {
     val fileWordsPath: String = getPathToRes("words.txt")
     val fileTextPath: String = getPathToRes("text.txt")
 
+
     //val numbersLines: Iterator[String] = Source.fromFile(fileNumbersPath).getLines()
 
     val numbersRDD1 = sc.parallelize(Seq(3, 3, 1, 4))
