@@ -2,9 +2,12 @@ package edu.dbortnichuk.scala
 
 object Main {
 
+  case class Person(name: String, age: Int)
+
   def main(args: Array[String]) {
 
-    var internalState = Vector[String]()
+    val person1 = Person("Dima", 2)
+    person1.
 
 
   }
