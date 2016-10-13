@@ -41,7 +41,7 @@ object Main {
     //SearchFunctions("potato").getMatchesNoReference(wordsRDD).foreach(println) //ok, serializable
 
     //word count
-    //textRDD.flatMap(line => line.split(" ")).map(w => (w, 1)).reduceByKey(_ + _).foreach(t => println(t._1 + " " + t._2))
+    textRDD.flatMap(line => line.split(" ")).map(w => (w, 1)).reduceByKey(_ + _).foreach(t => println(t._1 + " " + t._2))
 
     //val numbersRDDSample = numbersRDD1.sample(withReplacement = false, 0.2)//takes a fraction 0 - 2 elems out of 5
 

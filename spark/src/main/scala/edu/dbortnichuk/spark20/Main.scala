@@ -1,6 +1,6 @@
 package edu.dbortnichuk.spark20
 
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{DataFrame, RelationalGroupedDataset, SparkSession}
 import org.apache.spark.{SparkConf, SparkContext}
 
 /**
@@ -17,7 +17,7 @@ object Main {
 
     val fileHealthCare: String = edu.dbortnichuk.spark.Main.getPathToRes("Health_Care_Facilities.csv")
 
-    val spark = SparkSession
+    val sparkSession = SparkSession
       .builder()
       .appName("Spark SQL Example")
       .master("local[*]")
@@ -25,13 +25,41 @@ object Main {
       .getOrCreate()
 
     // For implicit conversions like converting RDDs to DataFrames
-    import spark.implicits._
+    import sparkSession.implicits._
 
     //val df = spark.sparkContext.textFile(fileHealthCare).toDF()
-    val df = spark.read.json(fileHealthCare)
-    println(df.count())
+    val sqlContext = sparkSession.sqlContext
 
-    spark.stop()
+    val df = sparkSession.read
+      .format("com.databricks.spark.csv")
+      .option("header", "true") //reading the headers
+      .option("mode", "DROPMALFORMED")
+      .csv(fileHealthCare)
+
+//    df.printSchema()
+//    println(df.count())
+//    print(df.first())
+//    println(s"partitions ${df.rdd.getNumPartitions}")
+
+    df.createOrReplaceTempView("hcf")
+
+    val sqlDF = sparkSession.sql("SELECT * FROM hcf")
+    //println(s"sqlDF ${df.count()}")
+
+    val sqlDFDist: DataFrame = sqlDF.distinct().select("Facility Name")
+    //println(s"sqlDFDist ${df.count()}")
+
+    //sqlDFDist.explain()
+    sqlDF.printSchema()
+
+    val groupDS: RelationalGroupedDataset = sqlDF.groupBy("Facility Name")
+    println(groupDS.count())
+
+
+
+    sparkSession.stop()
+
+
 
   }
 

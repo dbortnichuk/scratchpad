@@ -2,6 +2,7 @@ import scala.util.Try
 
 case class Person(var name: String, age: Int)
 val person1 = Person("Jean", 2)
+val person2 = Person("Jean", 2)
 
 person1.name = "Dolph"
 

@@ -39,11 +39,24 @@ implicit object PepperCanBeEaten extends CanBeEaten[Pepper] {
   def eatMe(food: Pepper) = "Pepper: " + food.form
 }
 
+
+
+implicit class CanBeEatenOps[A:CanBeEaten](food: A) {
+  def eat = CanBeEaten[A].eatMe(food)
+}
+
+
+
 //def eat[A](food: A)(implicit evidence: CanBeEaten[A]) = "eating: " + evidence.eatMe(food)
 //def eat[A: CanBeEaten](food: A) = "eating: " + implicitly[CanBeEaten[A]].eatMe(food)
-def eat[A: CanBeEaten](food: A) = "eating: " + CanBeEaten[A].eatMe(food)
+//def eat[A: CanBeEaten](food: A) = "eating: " + CanBeEaten[A].eatMe(food)
+def eat[A: CanBeEaten](food: A) = "eating: " + food.eat
 
 eat(Salt("white", "salty"))
 eat(Pepper("round"))
 //eat(Hooch("hooch"))
+
+
+
+
 
