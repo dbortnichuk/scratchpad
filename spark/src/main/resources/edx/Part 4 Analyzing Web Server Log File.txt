@@ -1,0 +1,16 @@
+host	path	status	content_size	time
+
+(4a) Exercise: Top Ten Error Paths
+not200DF = logs_df.filter(logs_df['status'] != 200)
+logs_sum_df = not200DF.select(not200DF['path']).groupBy('path').count().orderBy(desc('count'))
+or
+logs_sum_df = (not200DF.groupBy('path').count().sort('count',ascending = False))
+
+(4b) Exercise: Number of Unique Hosts
+unique_host_count = logs_df.select('host').distinct().count()
+
+
+(4c) Exercise: Number of Unique Daily Hosts
+day_to_host_pair_df = logs_df.select('host', dayofmonth('time').alias('day'))
+day_group_hosts_df = day_to_host_pair_df.distinct()
+daily_hosts_df = day_group_hosts_df.groupBy('day').count().cache()

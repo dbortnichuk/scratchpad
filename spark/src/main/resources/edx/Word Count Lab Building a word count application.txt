@@ -1,0 +1,35 @@
+(1b) Using DataFrame functions to add an 's'
+pluralDF = wordsDF.select((concat(wordsDF.word, lit('s')).alias('word')))
+
+(1c) Length of each word
+pluralLengthsDF = pluralDF.select(length('word').alias('length'))
+
+
+(2a) Using groupBy and count
+wordCountsDF = (wordsDF.groupBy('word').count())
+
+
+(3a) Unique words
+uniqueWordsCount = wordCountsDF.count()
+
+
+(3b) Means of groups using DataFrames
+averageCount = (wordCountsDF.groupBy().mean('count').first()[0])
+
+
+(4a) The wordCount function
+return wordListDF.groupBy('word').count()
+
+
+(4b) Capitalization and punctuation
+lower(trim(regexp_replace(column,'[^A-Za-z0-9 ]+', ''))).alias('sentence')
+
+
+(4d) Words from lines
+shakeWordsDF = (shakespeareDF.select( explode( split(shakespeareDF.sentence, ' ') ).alias('word') ) )
+shakeWordsDF = shakeWordsDF.where(shakeWordsDF.word != '')
+
+
+(4e) Count the words
+topWordsAndCountsDF =wordCount(shakeWordsDF).orderBy(desc('count'))
+
