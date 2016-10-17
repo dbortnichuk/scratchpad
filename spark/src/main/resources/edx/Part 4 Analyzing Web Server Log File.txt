@@ -1,4 +1,5 @@
-host	path	status	content_size	time
+host	     path	    status	    content_size	time
+some.com     /images    200         18930           1995-08-01
 
 (4a) Exercise: Top Ten Error Paths
 not200DF = logs_df.filter(logs_df['status'] != 200)
@@ -14,3 +15,63 @@ unique_host_count = logs_df.select('host').distinct().count()
 day_to_host_pair_df = logs_df.select('host', dayofmonth('time').alias('day'))
 day_group_hosts_df = day_to_host_pair_df.distinct()
 daily_hosts_df = day_group_hosts_df.groupBy('day').count().cache()
+
+(4d) Exercise: Visualizing the Number of Unique Daily Hosts
+days_with_hosts = daily_hosts_df.map(lambda (k,v):k).collect()
+hosts = daily_hosts_df.map(lambda (k,v):v).collect()
+#for <FILL IN>:
+#  <FILL IN>
+
+
+(4e) Exercise: Average Number of Daily Requests per Host
+total_req_per_day_df = logs_df.select(dayofmonth('time').alias('day')).groupBy('day').count()
+avg_daily_req_per_host_df = (
+  total_req_per_day_df.join(daily_hosts_df,
+                            total_req_per_day_df.day == daily_hosts_df.day
+                           )
+  .select(daily_hosts_df['day'],
+          (total_req_per_day_df['count']/daily_hosts_df['count'])
+           .alias('avg_reqs_per_host_per_day')
+          )
+  .cache()
+)
+
+(4f) Exercise: Visualizing the Average Daily Requests per Unique Host
+days_with_avg = avg_daily_req_per_host_df.map(lambda (k,v):k).collect()
+avgs = avg_daily_req_per_host_df.map(lambda (k,v):v).collect()
+#for <FILL IN>:
+#  <FILL IN>
+display(avg_daily_req_per_host_df)
+
+(5a) Exercise: Counting 404 Response Codes
+not_found_df = logs_df.filter(logs_df['status']==404).cache()
+
+(5b) Exercise: Listing 404 Status Code Records
+not_found_paths_df = not_found_df.select('path')
+unique_not_found_paths_df = not_found_paths_df.distinct()
+
+(5c) Exercise: Listing the Top Twenty 404 Response Code paths
+top_20_not_found_df = not_found_df.groupBy('path').count().sort('count',ascending = False)
+#top_20_not_found_df = not_found_paths_df.groupBy('path').count().orderBy(desc('count'))
+
+(5d) Exercise: Listing the Top Twenty-five 404 Response Code Hosts
+hosts_404_count_df = not_found_df.groupBy('host').count().orderBy(desc('count'))
+
+(5e) Exercise: Listing 404 Errors per Day
+errors_by_date_sorted_df = not_found_df.select(dayofmonth('time').alias('day')).groupBy('day').count().cache()
+
+(5f) Exercise: Visualizing the 404 Errors by Day
+days_with_errors_404 = errors_by_date_sorted_df.map(lambda (k,v):k).collect()
+errors_404_by_day = errors_by_date_sorted_df.map(lambda (k,v):v).collect()
+#for <FILL IN>:
+#  <FILL IN>
+
+(5g) Exercise: Top Five Days for 404 Errors
+top_err_date_df = errors_by_date_sorted_df.sort('count',ascending = False)
+
+(5h) Exercise: Hourly 404 Errors
+hour_records_sorted_df = not_found_df.select(hour('time').alias('hour')).groupBy('hour').count().cache()
+
+(5i) Exercise: Visualizing the 404 Response Codes by Hour
+hours_with_not_found = hour_records_sorted_df.map(lambda (k,v):k).collect()
+not_found_counts_per_hour = hour_records_sorted_df.map(lambda (k,v):v).collect()

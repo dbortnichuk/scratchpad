@@ -21,8 +21,9 @@ object WordCount {
     import spark.implicits._
 
     val df = spark.read.text(fileText)
-    //val ds = df.map(row => row.getAs[String](0)).flatMap(s => s.split(" ")).map(s => (s, 1)).groupByKey(kv => kv._1).mapGroups((k, v) => Seq(k, v.length))
-    val ds = df.map(row => row.getAs[String](0)).flatMap(s => s.split(" ")).map(s => (s, 1)).rdd.reduceByKey(_ + _).toDS()
+    //val ds = df.map(row => row.getAs[String](0)).flatMap(s => s.split(" ")).map(s => (s, 1)).groupByKey(kv => kv._1).mapGroups((k, v) => (k, v.length))
+    //val ds = df.map(row => row.getAs[String](0)).flatMap(s => s.split(" ")).map(s => (s, 1)).rdd.reduceByKey(_ + _).toDS()
+    val ds = df.map(_.getAs[String](0)).flatMap(_.split(" ")).map((_, 1)).groupByKey(_._1).mapGroups((w, xs) => (w, xs.length))
     ds.show()
     //df.foreach(row => println(row))
     //println(df.count())
