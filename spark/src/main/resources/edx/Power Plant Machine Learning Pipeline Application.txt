@@ -1,0 +1,115 @@
+Exercise 2(a)
+rawTextRdd = sc.textFile("dbfs:/databricks-datasets/power-plant/data")
+lines = rawTextRdd.take(5)
+for line in lines:
+  print line
+
+Exercise 2(b)
+powerPlantDF = sqlContext.read.format('com.databricks.spark.csv').options(delimiter='\t', header='true', inferschema='true').load("/databricks-datasets/power-plant/data")
+
+Exercise 2(c)
+customSchema = StructType([StructField('AT', DoubleType(), True),
+    StructField('V', DoubleType(), True),
+    StructField('AP', DoubleType(), True),
+    StructField('RH', DoubleType(), True),
+    StructField('PE', DoubleType(), True)])
+
+Exercise 2(d)
+altPowerPlantDF = sqlContext.read.format('com.databricks.spark.csv').options(delimiter='\t', header='true').load("/databricks-datasets/power-plant/data", schema = customSchema)
+
+Exercise 4(b)
+select V as ExhaustVacuum, PE as Power from power_plant
+
+Exercise 4(c)
+select AP as Pressure, PE as Power from power_plant
+
+Exercise 4(d)
+select RH as Humidity, PE as Power from power_plant
+
+Exercise 5(a)
+datasetDF = sqlContext.sql("SELECT * FROM power_plant")
+datasetDF.show()
+
+vectorizer = VectorAssembler(
+    inputCols=["AT", "V", "AP", "RH"],
+    outputCol="features")
+#vectorizer = VectorAssembler()
+#vectorizer.setInputCols("AT", "V", "AP", "RH")
+#vectorizer.setOutputCol("features")
+
+Exercise 6(a)
+seed = 1800009193L
+(split20DF, split80DF) = datasetDF.randomSplit([0.2, 0.8], seed)
+# Let's cache these datasets for performance
+testSetDF = split20DF.cache()
+trainingSetDF = split80DF.cache()
+
+Exercise 7(b)
+# Now let's use cvModel to compute an evaluation metric for our test dataset: testSetDF
+predictionsAndLabelsDF = cvModel.transform(testSetDF).select("AT", "V", "AP", "RH", "PE", "Predicted_PE")
+# Run the previously created RMSE evaluator, regEval, on the predictionsAndLabelsDF DataFrame
+rmseNew = regEval.evaluate(predictionsAndLabelsDF)
+# Now let's compute the r2 evaluation metric for our test dataset
+r2New = regEval.evaluate(predictionsAndLabelsDF, {regEval.metricName: "r2"})
+
+Exercise 7(c)
+# Create a DecisionTreeRegressor
+dt = DecisionTreeRegressor(maxDepth=2)
+dt.setLabelCol("PE")\
+  .setPredictionCol("Predicted_PE")\
+  .setFeaturesCol("features")\
+  .setMaxBins(100)
+# Create a Pipeline
+dtPipeline = Pipeline()
+# Set the stages of the Pipeline
+dtPipeline.setStages([vectorizer, dt])
+
+Exercise 7(d)
+# Let's just reuse our CrossValidator with the new dtPipeline,  RegressionEvaluator regEval, and 3 fold cross validation
+crossval.setEstimator(dtPipeline)
+# Let's tune over our dt.maxDepth parameter on the values 2 and 3, create a paramter grid using the ParamGridBuilder
+paramGrid = ParamGridBuilder().addGrid(dt.maxDepth, [2, 3]).build()
+# Add the grid to the CrossValidator
+crossval.setEstimatorParamMaps(paramGrid)
+# Now let's find and return the best model
+dtModel = crossval.fit(trainingSetDF).bestModel
+
+Exercise 7(e)
+# Now let's use dtModel to compute an evaluation metric for our test dataset: testSetDF
+predictionsAndLabelsDF = dtModel.transform(testSetDF).select("AT", "V", "AP", "RH", "PE", "Predicted_PE")
+# Run the previously created RMSE evaluator, regEval, on the predictionsAndLabelsDF DataFrame
+rmseDT = regEval.evaluate(predictionsAndLabelsDF)
+# Now let's compute the r2 evaluation metric for our test dataset
+r2DT = regEval.evaluate(predictionsAndLabelsDF, {regEval.metricName: "r2"})
+
+Exercise 7(f)
+# Create a RandomForestRegressor
+rf = RandomForestRegressor()
+rf.setLabelCol("PE")\
+  .setPredictionCol("Predicted_PE")\
+  .setFeaturesCol("features")\
+  .setSeed(100088121L)\
+  .setMaxDepth(8)\
+  .setNumTrees(30)
+# Create a Pipeline
+rfPipeline = Pipeline()
+# Set the stages of the Pipeline
+rfPipeline.setStages([vectorizer, rf])
+
+Exercise 7(g)
+# Let's just reuse our CrossValidator with the new rfPipeline,  RegressionEvaluator regEval, and 3 fold cross validation
+crossval.setEstimator(rfPipeline)
+# Let's tune over our rf.maxBins parameter on the values 50 and 100, create a parameter grid using the ParamGridBuilder
+paramGrid = ParamGridBuilder().addGrid(rf.maxBins, [50, 100]).build()
+# Add the grid to the CrossValidator
+crossval.setEstimatorParamMaps(paramGrid)
+# Now let's find and return the best model
+rfModel = crossval.fit(trainingSetDF).bestModel
+
+Exercise 7(h)
+# Now let's use rfModel to compute an evaluation metric for our test dataset: testSetDF
+predictionsAndLabelsDF = rfModel.transform(testSetDF).select("AT", "V", "AP", "RH", "PE", "Predicted_PE")
+# Run the previously created RMSE evaluator, regEval, on the predictionsAndLabelsDF DataFrame
+rmseRF = regEval.evaluate(predictionsAndLabelsDF)
+# Now let's compute the r2 evaluation metric for our test dataset
+r2RF = regEval.evaluate(predictionsAndLabelsDF, {regEval.metricName: "r2"})
