@@ -7,7 +7,7 @@ object Main {
   def main(args: Array[String]) {
 
     val person1 = Person("Dima", 2)
-    person1.
+
 
 
   }
