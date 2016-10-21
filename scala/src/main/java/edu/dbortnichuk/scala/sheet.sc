@@ -1,0 +1,1 @@
+val regParam: Array[Double] = (1 to 10).map(x => x.toDouble / 100).toArray
