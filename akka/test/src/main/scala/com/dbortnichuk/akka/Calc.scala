@@ -1,6 +1,6 @@
 package com.dbortnichuk.akka
 
-import akka.actor.SupervisorStrategy.{Restart, Stop}
+import akka.actor.SupervisorStrategy.{Restart, Resume, Stop}
 import akka.actor.{Actor, ActorLogging, ActorSystem, DeadLetter, OneForOneStrategy, PoisonPill, Props, SupervisorStrategy}
 import akka.util.Timeout
 
@@ -25,7 +25,7 @@ object Calc {
 
     driver ! Task(1, 3, Sum)
     Thread.sleep(100)
-    worker ! ISIssue
+    worker ! IAcIssue
     Thread.sleep(100)
     driver ! Task(1, 0, Div)
 
@@ -85,6 +85,7 @@ class Worker extends Actor with ActorLogging {
   override def supervisorStrategy: SupervisorStrategy = OneForOneStrategy() {
     case _: IllegalArgumentException => Restart
     case _: IllegalStateException => Stop
+    case _: IllegalAccessException => Resume
   }
 
   def receive = {
@@ -96,8 +97,9 @@ class Worker extends Actor with ActorLogging {
         case Div => sender ! Result(term1 / term2)
       }
     }
-    //case IAIssue => throw new IllegalArgumentException("issue occured")
+    case IAIssue => throw new IllegalArgumentException("issue occured")
     case ISIssue => throw new IllegalStateException("issue occured")
+    case IAcIssue => throw new IllegalAccessException("issue occured")
   }
 }
 
@@ -114,6 +116,7 @@ case class Result(res: Double)
 
 case object IAIssue
 case object ISIssue
+case object IAcIssue
 
 sealed trait Operation
 
