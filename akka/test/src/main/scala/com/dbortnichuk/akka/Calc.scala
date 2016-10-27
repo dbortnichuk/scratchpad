@@ -25,7 +25,7 @@ object Calc {
 
     driver ! Task(1, 3, Sum)
     Thread.sleep(100)
-    worker ! IAcIssue
+    worker ! ISIssue
     Thread.sleep(100)
     driver ! Task(1, 0, Div)
 
@@ -96,6 +96,7 @@ class Worker extends Actor with ActorLogging {
         case Sum => sender ! Result(term1 + term2)
         case Div => sender ! Result(term1 / term2)
       }
+      //self ! PoisonPill
     }
     case IAIssue => throw new IllegalArgumentException("issue occured")
     case ISIssue => throw new IllegalStateException("issue occured")
