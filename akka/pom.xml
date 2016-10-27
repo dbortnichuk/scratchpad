@@ -16,6 +16,7 @@
 
     <modules>
         <module>akka-in-action</module>
+        <module>test</module>
     </modules>
 
     <properties>

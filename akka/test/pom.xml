@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>edu.dbortnichuk</groupId>
+        <artifactId>akka</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>test</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <nscala-time.version>1.8.0</nscala-time.version>
+        <scala.version>2.11.7</scala.version>
+        <scala.test.version>2.2.6</scala.test.version>
+        <scala.tools.version>2.15.2</scala.tools.version>
+        <scala.compat.version>2.11</scala.compat.version>
+        <scala.test.plugin.version>1.0</scala.test.plugin.version>
+        <akka.version>2.3.14</akka.version>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>prod</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.scala-tools</groupId>
+                        <artifactId>maven-scala-plugin</artifactId>
+                        <version>${scala.tools.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>compile</goal>
+                                    <!--<goal>testCompile</goal>-->
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <finalName>${artifactId}-${version}</finalName>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+            <dependencies>
+
+                <dependency>
+                    <groupId>org.scala-lang</groupId>
+                    <artifactId>scala-library</artifactId>
+                    <version>${scala.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.typesafe.akka</groupId>
+                    <artifactId>akka-actor_${scala.compat.version}</artifactId>
+                    <version>${akka.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.typesafe.akka</groupId>
+                    <artifactId>akka-slf4j_${scala.compat.version}</artifactId>
+                    <version>${akka.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.github.nscala-time</groupId>
+                    <artifactId>nscala-time_${scala.compat.version}</artifactId>
+                    <version>${nscala-time.version}</version>
+                </dependency>
+
+
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>test</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.scala-tools</groupId>
+                        <artifactId>maven-scala-plugin</artifactId>
+                        <version>${scala.tools.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>compile</goal>
+                                    <!--<goal>testCompile</goal>-->
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.scalatest</groupId>
+                        <artifactId>scalatest-maven-plugin</artifactId>
+                        <version>${scala.test.plugin.version}</version>
+                        <configuration>
+                            <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                            <junitxml>.</junitxml>
+                            <filereports>WDF TestSuite.txt</filereports>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>test</id>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+            <dependencies>
+                <dependency>
+                    <groupId>org.scala-lang</groupId>
+                    <artifactId>scala-library</artifactId>
+                    <version>${scala.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.scalatest</groupId>
+                    <artifactId>scalatest_${scala.compat.version}</artifactId>
+                    <version>${scala.test.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.typesafe.akka</groupId>
+                    <artifactId>akka-testkit_${scala.compat.version}</artifactId>
+                    <version>${akka.version}</version>
+                    <scope>test</scope>
+                </dependency>
+
+
+            </dependencies>
+        </profile>
+
+    </profiles>
+
+
+</project>
