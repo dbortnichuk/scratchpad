@@ -1,7 +1,7 @@
 package com.dbortnichuk.akka
 
 import akka.actor.SupervisorStrategy.{Restart, Resume, Stop}
-import akka.actor.{Actor, ActorLogging, ActorSystem, DeadLetter, OneForOneStrategy, PoisonPill, Props, SupervisorStrategy}
+import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, DeadLetter, OneForOneStrategy, PoisonPill, Props, SupervisorStrategy, Terminated}
 import akka.util.Timeout
 
 import scala.concurrent.Future
@@ -17,7 +17,7 @@ object Calc {
 
     val driver = system.actorOf(Props[Driver], "driver")
     val worker = system.actorOf(Props[Worker], "worker")
-    val watcher = system.actorOf(Props[Watcher], "watcher")
+    val watcher = system.actorOf(Props(new Watcher(worker)), "watcher")
 
     system.eventStream.subscribe(watcher, classOf[DeadLetter])
 
@@ -96,7 +96,7 @@ class Worker extends Actor with ActorLogging {
         case Sum => sender ! Result(term1 + term2)
         case Div => sender ! Result(term1 / term2)
       }
-      //self ! PoisonPill
+      self ! PoisonPill
     }
     case IAIssue => throw new IllegalArgumentException("issue occured")
     case ISIssue => throw new IllegalStateException("issue occured")
@@ -104,9 +104,11 @@ class Worker extends Actor with ActorLogging {
   }
 }
 
-class Watcher extends Actor {
+class Watcher(workerRef: ActorRef) extends Actor {
+  context.watch(workerRef)
   def receive = {
     case t: Task => println(t)
+    case Terminated(actorRef) => println(s"terminated $actorRef")
     case DeadLetter(msg, from, to) => println(s"failed to deliver msg: ${msg} from: ${from.path.name} to: ${to.path.name}")
   }
 }
