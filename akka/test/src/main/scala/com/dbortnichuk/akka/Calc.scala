@@ -44,6 +44,8 @@ class Driver extends Actor with ActorLogging {
   def receive = {
     case task: Task => {
       val worker = context.actorSelection("../worker")
+
+      //worker.forward(task)
       //log.info("Sending ping to node_1")
       val future: Future[Result] = ask(worker, task).mapTo[Result]
       future.onSuccess {

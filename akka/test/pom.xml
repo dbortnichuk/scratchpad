@@ -23,6 +23,7 @@
         <scala.compat.version>2.11</scala.compat.version>
         <scala.test.plugin.version>1.0</scala.test.plugin.version>
         <akka.version>2.3.14</akka.version>
+        <mysql.version>5.1.6</mysql.version>
     </properties>
 
     <profiles>
@@ -81,6 +82,11 @@
                     <groupId>com.github.nscala-time</groupId>
                     <artifactId>nscala-time_${scala.compat.version}</artifactId>
                     <version>${nscala-time.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                    <version>${mysql.version}</version>
                 </dependency>
 
 
