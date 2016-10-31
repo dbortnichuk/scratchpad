@@ -1,22 +1,48 @@
 package com.dbortnichuk.akka.etl.supervisors
 
-import akka.actor.{Actor, ActorRef, Props}
+import java.io.FileNotFoundException
+
+import akka.actor.{Actor, ActorLogging, ActorRef, OneForOneStrategy, Props, SupervisorStrategy, Terminated}
 import akka.actor.Actor.Receive
-import com.dbortnichuk.akka.etl.actors.CsvProcessor
+import akka.actor.SupervisorStrategy.{Restart, Resume, Stop}
+import com.dbortnichuk.akka.etl.actors.{CsvProcessor, FileWatcher}
+import com.dbortnichuk.akka.etl.actors.FileWatcher.NewFile
+
+import scala.io.Source
+import scala.util.Try
 
 /**
   * Created by dbort on 28.10.2016.
   */
-class FileWatcherSupervisor(fileWatcherProps: Props, logProcessingSup: ActorRef) extends Actor {
+class FileWatcherSupervisor(fileWatcherProps: Props) extends Actor with ActorLogging {
 
-  private val csvProcessor = context.system.actorOf(fileWatcherProps, CsvProcessor.name)
+  import com.dbortnichuk.akka.etl.actors.Utils._
 
-  override def receive: Receive = ???
+  private val fileWatcher = context.system.actorOf(fileWatcherProps, FileWatcher.name)
+
+  context.watch(fileWatcher)
+
+
+  override def receive: Receive = {
+    case nf: NewFile => fileWatcher forward nf
+    case Terminated(actorRef) => {
+      if (actorRef == fileWatcher){
+        context.system.shutdown()
+      }
+    }
+  }
+
+  override def supervisorStrategy: SupervisorStrategy = OneForOneStrategy() {
+    case _: FileNotFoundException => Restart
+    case _: CorruptedFileException => Resume
+    case _: DbBrokenConnectionException => Restart
+    case _: DiskError => Stop
+  }
 }
 
 object FileWatcherSupervisor {
 
-  def props(fileWatcherProps: Props, logProcessingSup: ActorRef) = Props(new FileWatcherSupervisor(fileWatcherProps, logProcessingSup))
+  def props(fileWatcherProps: Props) = Props(new FileWatcherSupervisor(fileWatcherProps))
 
   def name = "file-watcher-sup"
 

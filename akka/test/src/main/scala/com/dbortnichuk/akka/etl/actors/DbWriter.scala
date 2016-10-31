@@ -41,7 +41,8 @@ object DbWriter {
   def props(databaseUrl: String, userName: String, password: String) =
     Props(new DbWriter(databaseUrl, userName, password))
 
-  def name = s"""db-writer-${UUID.randomUUID.toString}""""
+  //def name = s"""db-writer-${UUID.randomUUID.toString}""""
+  def name = s"""db-writer-${UUID.randomUUID.toString}"""
 
   // A line in the log file parsed by the LogProcessor Actor
   case class Line(userId: Int, movieId: Int, rating: Double, timestamp: Long)
