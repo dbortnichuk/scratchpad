@@ -21,3 +21,7 @@ val future1a = Future(throw new IllegalArgumentException)
 val future1b = future1a recover { case e: IllegalArgumentException => randomInteger() }
 
 val future3a = add(future1b, future2)
+
+future3a.onComplete{a =>
+  print(a)
+}
