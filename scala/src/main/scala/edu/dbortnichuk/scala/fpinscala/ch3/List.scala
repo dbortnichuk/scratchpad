@@ -2,6 +2,7 @@ package edu.dbortnichuk.scala.fpinscala.ch3
 
 import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader
 
+import scala.collection.mutable.ArrayBuffer
 import scala.runtime.Nothing$
 
 /**
@@ -31,15 +32,23 @@ object Main extends App {
   //println("foldRightNilCons: " + List.foldRight(List(1,2,3), Nil:List[Int])(Cons(_,_)))
   //println("length: " + List.length(List(1, 2, 3, 4)))
   //println("foldLeft: " + List.foldLeft(List(1, 2, 3, 4), 0)(_ + _))
+  //println("foldRight1: " + List.foldRight1(List(1, 2, 3, 4), 0)(_ + _))
   //println("reverse: " + List.reverse(List(1, 2, 3, 4)))
-   //println("append1: " + List.append1(List(1, 2, 3, 4), List(3, 4, 5, 6)))
-  println("concat: " + List.concat(List(List(1, 2, 3, 4), List(1, 2, 3, 4), List(1, 2, 3, 4), List(1, 2, 3, 4))))
-  print(List.counter)
+  //println("append1: " + List.append1(List(1, 2, 3, 4), List(3, 4, 5, 6)))
+  //println("concat: " + List.concat(List(List(1, 2, 3, 4), List(1, 2, 3, 4), List(1, 2, 3, 4), List(1, 2, 3, 4))))
+  //print(List.counter)
+  //println("map: " + List.map(List(1, 2, 3, 4))(x => (x + 1) + "aa"))
+  //println("filter: " + List.filter(List(1, 2, 3, 4))(_ > 2))
+  //println("flatMap: " + List.flatMap(List("a a", "b b b", "c ", "d d d d"))(xs => List(xs.substring(0, xs.indexOf(" ")))))
+  //println("filter: " + List.filter1(List(1, 2, 3, 4))(_ > 2))
+  //println("zipWith: " + List.zipWith(List(1, 2, 3, 4), List(1, 2, 3, 4))(_ + _))
+  //println("hasSubsequence: " + List.hasSubsequence(List(1, 2, 3, 4, 5), List(3, 4, 5)))
 }
 
 object List {
 
   var counter = 0
+
   // `List` companion object. Contains functions for creating and working with lists.
   def sum(ints: List[Int]): Int = ints match {
     // A function that uses pattern matching to add up a list of integers
@@ -93,12 +102,12 @@ object List {
 
   def tail[A](l: List[A]): List[A] = drop(l, 1)
 
-    def head[A](l: List[A]): A = {
-      l match {
-        case Nil => throw new NoSuchElementException("head of empty list")
-        case Cons(x, xs) => x
-      }
+  def head[A](l: List[A]): A = {
+    l match {
+      case Nil => throw new NoSuchElementException("head of empty list")
+      case Cons(x, xs) => x
     }
+  }
 
   def setHead[A](l: List[A], h: A): List[A] =
     l match {
@@ -159,28 +168,134 @@ object List {
   }
 
   def reverse[A](l: List[A]): List[A] = {
-    foldLeft(l, Nil:List[A])((nl, el) => Cons(el, nl))
+    foldLeft(l, Nil: List[A])((nl, el) => Cons(el, nl))
   }
 
-  def foldRight1[A, B](as: List[A], z: B)(f: (A, B) => B): B = ??? //in terms of foldLeft
+  def foldRight1[A, B](as: List[A], z: B)(f: (A, B) => B): B = { // !
+      foldLeft(as, (b: B) => b)((g, a) => (b => g(f(a, b))))(z)
+  }
 
-  def append1[A](a1: List[A], a2: List[A]): List[A] ={
-    foldLeft(reverse(a1), a2)((nl, el) => Cons(el, nl)) // bad performance because of reversing
+  def append1[A](a1: List[A], a2: List[A]): List[A] = {
+    foldLeft(reverse(a1), a2)((nl, el) => Cons(el, nl)) // bad performance because of reversing, non linear degradation
   }
 
 
   def concat[A](ll: List[List[A]]): List[A] = {
     @annotation.tailrec
-    def loop(lofl: List[List[A]], acc: List[A]): List[A] ={
+    def loop(lofl: List[List[A]], acc: List[A]): List[A] = {
       lofl match {
         case Nil => acc
-        case Cons(xs, xss) => loop(xss, List.append1(acc, xs))
+        case Cons(xs, xss) => loop(xss, List.append1(acc, xs)) // bad performance because append1
       }
     }
 
     loop(ll, Nil)
   }
 
+  def map[A, B](l: List[A])(f: A => B): List[B] = {
+    val list = reverse(l)
+    @annotation.tailrec
+    def loop(oldL: List[A], newL: List[B]): List[B] = {
+      oldL match {
+        case Nil => newL
+        case Cons(x, xs) => loop(xs, Cons(f(x), newL))
+      }
+    }
 
-  def map[A, B](l: List[A])(f: A => B): List[B] = ???
+    loop(list, Nil)
+  }
+
+  def filter[A, B](l: List[A])(f: A => Boolean): List[A] = {
+    val list = reverse(l)
+    @annotation.tailrec
+    def loop(oldL: List[A], newL: List[A]): List[A] = {
+      oldL match {
+        case Nil => newL
+        case Cons(x, xs) =>
+          if (f(x)) loop(xs, Cons(x, newL))
+          else loop(xs, newL)
+      }
+    }
+
+    loop(list, Nil)
+  }
+
+  def filter1[A, B](l: List[A])(f: A => Boolean): List[A] = {
+    flatMap(l) { a =>
+      if (f(a)) List(a)
+      else Nil
+    }
+  }
+
+  def flatMap[A, B](as: List[A])(f: A => List[B]): List[B] = {
+    val list = reverse(as)
+    @annotation.tailrec
+    def loop(oldL: List[A], newL: List[B]): List[B] = {
+      oldL match {
+        case Nil => newL
+        case Cons(x, xs) => loop(xs, append1(f(x), newL))
+      }
+    }
+
+    loop(list, Nil)
+  }
+
+  def zipWith[A, B, C](l1: List[A], l2: List[B])(f: (A, B) => C): List[C] = {
+    def loop(la: List[A], lb: List[B], acc: List[C]): List[C] = {
+      la match {
+        case Nil => acc
+        case Cons(x, xs) => {
+          lb match {
+            case Nil => throw new IllegalArgumentException("second list can not be shorter than first one")
+            case Cons(y, ys) => loop(xs, ys, Cons(f(x, y), acc))
+          }
+        }
+      }
+    }
+
+    reverse(loop(l1, l2, Nil))
+  }
+
+  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = {
+    @annotation.tailrec
+    def loop(sp: List[A], sb: List[A]): Boolean = {
+      sp match {
+        case Nil => {
+          sb match {
+            case Nil => true
+            case Cons(y, ys) => false
+          }
+        }
+        case Cons(x, xs) => {
+          sb match {
+            case Nil => true
+            case Cons(y, ys) => {
+              if (x == y) loop(xs, ys)
+              else loop(xs, sub)
+            }
+          }
+        }
+      }
+    }
+
+    loop(sup, sub)
+
+  }
+
+  //  def toArray[A](l: List[A]): Array[A] = {
+  //    @annotation.tailrec
+  //    def loop(oldL: List[A]): Array[A] = {
+  //      val ab = new ArrayBuffer[A]
+  //      oldL match {
+  //        case Nil => ab.toArray[A]
+  //        case Cons(x, xs) => {
+  //          ab.append(x)
+  //          loop(xs)
+  //        }
+  //      }
+  //    }
+  //    loop(l)
+  //  }
+
+
 }
