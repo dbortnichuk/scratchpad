@@ -19,7 +19,7 @@ which may be `Nil` or another `Cons`.
  */
 case class Cons[+A](head: A, tail: List[A]) extends List[A]
 
-object Main extends App {
+object MainList extends App {
 
   //  println("sum: " + List.sum(List(1, 2)))
   //  println("append: " + List.append(List(1, 2), List(3, 4)))
