@@ -1,5 +1,7 @@
 package edu.dbortnichuk.scala.fpinscala.ch4
 
+import scala.util.Try
+
 sealed trait Option[+A] {
   def map[B](f: A => B): Option[B] = {
     this match {
@@ -40,6 +42,10 @@ object MainList extends App {
   println("flatMap: " + opt.flatMap(s => Some(s + "!")))
   println("orElse: " + none.orElse(Some("default")))
   println("filter: " + opt.filter(_.startsWith("p")))
+  println("map2: " + Option.map2(Some(1), Some(2))((a: Int, b: Int) => a + b))
+  println("sequence: " + Option.sequence(List(Some("aa"), Some("b"))))
+  println("traverse: " + Option.traverse(List("1", "2"))(i => Some(i.toInt)))
+  println("sequence2: " + Option.sequence2(List(Some("aa"), Some("b"))))
 }
 
 object Option {
@@ -68,11 +74,28 @@ object Option {
     if (xs.isEmpty) None
     else Some(xs.sum / xs.length)
 
-  def variance(xs: Seq[Double]): Option[Double] = ???
+  def variance(xs: Seq[Double]): Option[Double] = {
+    mean(xs).flatMap(m => mean(xs.map(x => math.pow(x - m, 2)))) //!
+  }
 
-  def map2[A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = ???
+  def map2[A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = {
+    for {
+      aval <- a
+      bval <- b
+    } yield f(aval, bval)
+  }
 
-  def sequence[A](a: List[Option[A]]): Option[List[A]] = ???
+  def sequence[A](a: List[Option[A]]): Option[List[A]] = {
+    a.foldRight[Option[List[A]]](Some(Nil))((ea, en) => map2(ea, en)(_ :: _))
 
-  def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = ???
+  }
+
+  def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = {
+    a.foldRight[Option[List[B]]](Some(Nil))((ea, en) => map2(f(ea), en)(_ :: _))
+  }
+
+  def sequence2[A](a: List[Option[A]]): Option[List[A]] = {
+     traverse(a)(x => x.flatMap(Some(_)))
+  }
+
 }
