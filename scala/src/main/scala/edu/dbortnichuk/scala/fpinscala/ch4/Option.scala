@@ -33,7 +33,7 @@ case class Some[+A](get: A) extends Option[A]
 
 case object None extends Option[Nothing]
 
-object MainList extends App {
+object MainOption extends App {
   val opt = Some("payload")
   val none = None
 
